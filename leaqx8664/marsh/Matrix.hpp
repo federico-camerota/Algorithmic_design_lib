@@ -115,6 +115,9 @@ namespace leaqx8664{
 		 * ADD CONSTRUCTORS USING MATRIX SUBLOCKS
 		*/
 
+
+
+
 	    private:
 		
 		/*
@@ -202,7 +205,23 @@ namespace leaqx8664{
 		/*
 		 * Matrix_const_iterator definition
 		 */
-		class Matrix_const_iterator : Matrix_iterator{}
+		class Matrix_const_iterator : Matrix_iterator{
+		
+		    public:
+			using Matrix_iterator::Matrix_iterator;
+
+			/**
+			 * @brief Operator* for the Matrix_const_iterator class
+			 *
+			 * Returns the element currently pointed by the iterator as a const
+			 * reference. If all elements have already been consumed an 
+			 * ExpiredIteratorException will be throwed.
+			 */
+			const scalar_type& operator*(){
+			
+			    return Matrix_iterator::operator*();
+			}
+		};
 	}
 	
 	
