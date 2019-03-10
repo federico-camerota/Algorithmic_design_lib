@@ -13,6 +13,8 @@
 #include <utility>
 #include <iterator>
 
+#include "../leaq_exceptions.hpp"
+
 namespace leaqx8664{
 
     namespace marsh{
@@ -110,9 +112,89 @@ namespace leaqx8664{
 		    dims{std::move(other.dims)}, max_index{other.max_index}, elements{std::move(other.elements)}
 		{}
 		/**
+		 * ADD CONSTRUCTORS USING MATRIX SUBLOCKS
 		*/
 
-	    }
+	    private:
+		
+		/*
+		 * Matrix_iterator definition
+		 */
+		class Matrix_iterator : std::iterator<std::forward_iterator_tag, T>{
+
+		    //! Pointer to the current element pointed by the iterator
+		    scalar_type* current_position;
+		    //! Number of elements left to visit
+		    size_t remaining;
+
+		    public:
+			
+			/**
+			 * @brief Constructor for a Matrix_iterator
+			 *
+			 * Create a Matrix_iterator that points to the given matrix element.
+			 *
+			 * @param target First element in the iteration through the matrix
+			 * @param max Maximum offset from the starting element
+			 */
+			Matrix_iterator (scalar_type* target, size_t max) :
+			    current_position{target}, remaining{max + 1}
+			{}
+			/**
+			 * @brief Operator++ for the Matrix_iterator class
+			 *
+			 * Update the iterator to point to the following element in the matrix.
+			 * When all elements have been consumed, a call to this method will throw
+			 * an ExpiredIteratorException.
+			 */
+			iterator& operator++(){
+			
+			    if (remaining > 0){
+			    
+				//decrement remaining, when different from zero increment 
+				//the current_position while when reaches zero set to
+				//nullptr
+				(--remaining && ++current_position) || current_position = nullptr;
+				return this;
+			    }
+
+			    throw ExpiredIteratorException{};
+			}
+			/**
+			 * @brief Operator* for the Matrix_iterator class
+			 *
+			 * Returns a reference to the current element pointed by the iterator.
+			 * If all elements have already been consumed, a call to this method will
+			 * throw an ExpiredIteratorException
+			 */
+			scalar_type& operator*(){
+			
+			    if (current_position)
+				return *current_position;
+			    else
+				throw ExpiredIteratorException{};
+			}
+			/**
+			 * @brief Operator== for the Matrix_iterator class
+			 *
+			 * Checks if this and the given Matrix_iterator are pointint to the same
+			 * element in the matrix.
+			 *
+			 * @param other Iterator to compare with
+			 */
+			bool operator==(const iterator& other){
+			
+			    return current_position == other.current_position;
+			}
+			bool operator!=(const iterator& other){
+			
+			    return !(*this == other);
+			}
+
+		};
+	}
+	
+	
 	}
 }
 
