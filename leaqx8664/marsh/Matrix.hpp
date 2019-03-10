@@ -186,12 +186,23 @@ namespace leaqx8664{
 			
 			    return current_position == other.current_position;
 			}
+			/**
+			 * @brief Operator!= for the Matrix_iterator class
+			 *
+			 * Check if this and the given Matrix_iterator are different
+			 *
+			 * @param other Iterator to check against
+			 */
 			bool operator!=(const iterator& other){
 			
 			    return !(*this == other);
 			}
 
 		};
+		/*
+		 * Matrix_const_iterator definition
+		 */
+		class Matrix_const_iterator : Matrix_iterator{}
 	}
 	
 	
