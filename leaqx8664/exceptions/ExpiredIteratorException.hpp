@@ -5,11 +5,11 @@
 
 #include <exception>
 
-class ExpiredIteratorException : std::Exception{
+class ExpiredIteratorException: std::exception {
 
-    virtual const char* what() const noexcept{
+    const char* what() const noexcept{
     
 	return "Failed call to an expired iterator";
     }
-}
+};
 #endif

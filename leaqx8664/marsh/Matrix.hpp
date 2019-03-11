@@ -12,6 +12,7 @@
 #include <memory>
 #include <utility>
 #include <iterator>
+#include <iostream>
 
 #include "../leaq_exceptions.hpp"
 
@@ -27,31 +28,131 @@ namespace leaqx8664{
 	 * such as summation and multiplication are defined through the overloading of operators.
 	 */
 	template <typename T>
-	class Matrix<T>{
+	class Matrix{
 
-	    //! Pointer to array of elements in the matrix
-	    std::uniq_ptr<T> elements; 
-	    //! Pair of the number of rows and columns in the matrix
-	    std::pair<size_t, size_t> dims; 
-	    //! Maximum valid index in this matrix
-	    const size_t max_index;
+	    public:
 
-	    /**
-	     * @class Matrix_iterator
-	     *
-	     * @brief Iterator for the matrix class
-	     *
-	     * This class allows iteration through a Matrix object by rows.
-	     */
-	    class Matrix_iterator : std::iterator<std::forward_iterator_tag, T>;
-	    /**
-	     * @class Matrix_const_iterator
-	     *
-	     * @brief Const iterator for the matrix class
-	     *
-	     * This class allows iteration through a const Matrix object by rows.
-	     */
-	    class Matrix_const_iterator : Matrix_iterator;
+		//! Alias for scalar_type used in the matrix
+		using scalar_type = T;
+
+	    private:
+		//! Pointer to array of elements in the matrix
+		scalar_type* elements; 
+		//! Pair of the number of rows and columns in the matrix
+		std::pair<size_t, size_t> dims; 
+		//! Maximum valid index in this matrix
+		const size_t max_index;
+
+		/**
+		 * @class Matrix_iterator
+		 *
+		 * @brief Iterator for the matrix class
+		 *
+		 * This class allows iteration through a Matrix object by rows.
+		 */
+		class Matrix_iterator : std::iterator<std::forward_iterator_tag, T> {
+
+		    //! Pointer to the current element pointed by the iterator
+		    scalar_type* current_position;
+		    //! Number of elements left to visit
+		    size_t remaining;
+
+		    public:
+			
+			/**
+			 * @brief Constructor for a Matrix_iterator
+			 *
+			 * Create a Matrix_iterator that points to the given matrix element.
+			 *
+			 * @param target First element in the iteration through the matrix
+			 * @param max Maximum offset from the starting element
+			 */
+			Matrix_iterator (scalar_type* target, size_t max) :
+			    current_position{target}, remaining{max + 1}
+			{}
+			/**
+			 * @brief Operator++ for the Matrix_iterator class
+			     *
+			     * Update the iterator to point to the following element in the matrix.
+			     * When all elements have been consumed, a call to this method will throw
+			     * an ExpiredIteratorException.
+			     */
+			    Matrix_iterator& operator++(){
+			    
+				if (remaining > 0){
+				
+				    //decrement remaining, when different from zero increment 
+				    //the current_position while when reaches zero set to
+				    //nullptr
+				    (--remaining && ++current_position) || (current_position = nullptr);
+				    return *this;
+				}
+
+				throw ExpiredIteratorException{};
+			    }
+			    /**
+			     * @brief Operator* for the Matrix_iterator class
+			     *
+			     * Returns a reference to the current element pointed by the iterator.
+			     * If all elements have already been consumed, a call to this method will
+			     * throw an ExpiredIteratorException
+			     */
+			    scalar_type& operator*(){
+			    
+				if (current_position)
+				    return *current_position;
+				else
+				    throw ExpiredIteratorException{};
+			    }
+			    /**
+			     * @brief Operator== for the Matrix_iterator class
+			     *
+			     * Checks if this and the given Matrix_iterator are pointint to the same
+			     * element in the matrix.
+			     *
+			     * @param other Iterator to compare with
+			     */
+			    bool operator==(const Matrix_iterator& other){
+			    
+				return current_position == other.current_position;
+			    }
+			    /**
+			     * @brief Operator!= for the Matrix_iterator class
+			     *
+			     * Check if this and the given Matrix_iterator are different
+			     *
+			     * @param other Iterator to check against
+			     */
+			    bool operator!=(const Matrix_iterator& other){
+			    
+				return !(*this == other);
+			    }
+
+		};
+		/**
+		 * @class Matrix_const_iterator
+		 *
+		 * @brief Const iterator for the matrix class
+		 *
+		 * This class allows iteration through a const Matrix object by rows.
+		 */
+		class Matrix_const_iterator : public Matrix_iterator{
+		
+		public:
+		    using Matrix_iterator::Matrix_iterator;
+
+		    /**
+		     * @brief Operator* for the Matrix_const_iterator class
+		     *
+		     * Returns the element currently pointed by the iterator as a const
+		     * reference. If all elements have already been consumed an 
+		     * ExpiredIteratorException will be throwed.
+		     */
+		    const scalar_type& operator*(){
+		    
+			return Matrix_iterator::operator*();
+		    }
+		};
 
 	    public:
 
@@ -64,8 +165,6 @@ namespace leaqx8664{
 		 */
 		class Matrix_block;
 
-		//! Alias for the scalar type
-		using scalar_type = T;
 		//! Alias for the dimensions of the matrix
 		using dimension = std::pair<size_t, size_t>;
 		//! Alias for matrix iterators
@@ -89,7 +188,7 @@ namespace leaqx8664{
 		 * @param n_columns Number of columns in the matrix
 		 */
 		Matrix (const size_t n_rows, const size_t n_columns) :
-		    dims{n_rows, n_columns}, max_index{n_rows*n_columns - 1}, elements{new T[max_index + 1]}
+		    dims{n_rows, n_columns}, max_index{n_rows*n_columns - 1}, elements{new T[n_rows*n_columns + 1]}
 		{}
 		/**
 		 * Copy constructor for Matrix objects
@@ -109,123 +208,45 @@ namespace leaqx8664{
 		 * @param other Matrix object to move from
 		 */
 		Matrix (Matrix<T>&& other) :
-		    dims{std::move(other.dims)}, max_index{other.max_index}, elements{std::move(other.elements)}
-		{}
+		    dims{std::move(other.dims)}, max_index{other.max_index}, elements{nullptr}
+		{
+		    std::swap(elements, other.elements);
+		}
 		/**
 		 * ADD CONSTRUCTORS USING MATRIX SUBLOCKS
 		*/
 
-
-
-
-	    private:
-		
-		/*
-		 * Matrix_iterator definition
+		/**
+		 * @brief Descturctor for the Matrix class
 		 */
-		class Matrix_iterator : std::iterator<std::forward_iterator_tag, T>{
-
-		    //! Pointer to the current element pointed by the iterator
-		    scalar_type* current_position;
-		    //! Number of elements left to visit
-		    size_t remaining;
-
-		    public:
-			
-			/**
-			 * @brief Constructor for a Matrix_iterator
-			 *
-			 * Create a Matrix_iterator that points to the given matrix element.
-			 *
-			 * @param target First element in the iteration through the matrix
-			 * @param max Maximum offset from the starting element
-			 */
-			Matrix_iterator (scalar_type* target, size_t max) :
-			    current_position{target}, remaining{max + 1}
-			{}
-			/**
-			 * @brief Operator++ for the Matrix_iterator class
-			 *
-			 * Update the iterator to point to the following element in the matrix.
-			 * When all elements have been consumed, a call to this method will throw
-			 * an ExpiredIteratorException.
-			 */
-			iterator& operator++(){
-			
-			    if (remaining > 0){
-			    
-				//decrement remaining, when different from zero increment 
-				//the current_position while when reaches zero set to
-				//nullptr
-				(--remaining && ++current_position) || current_position = nullptr;
-				return this;
-			    }
-
-			    throw ExpiredIteratorException{};
-			}
-			/**
-			 * @brief Operator* for the Matrix_iterator class
-			 *
-			 * Returns a reference to the current element pointed by the iterator.
-			 * If all elements have already been consumed, a call to this method will
-			 * throw an ExpiredIteratorException
-			 */
-			scalar_type& operator*(){
-			
-			    if (current_position)
-				return *current_position;
-			    else
-				throw ExpiredIteratorException{};
-			}
-			/**
-			 * @brief Operator== for the Matrix_iterator class
-			 *
-			 * Checks if this and the given Matrix_iterator are pointint to the same
-			 * element in the matrix.
-			 *
-			 * @param other Iterator to compare with
-			 */
-			bool operator==(const iterator& other){
-			
-			    return current_position == other.current_position;
-			}
-			/**
-			 * @brief Operator!= for the Matrix_iterator class
-			 *
-			 * Check if this and the given Matrix_iterator are different
-			 *
-			 * @param other Iterator to check against
-			 */
-			bool operator!=(const iterator& other){
-			
-			    return !(*this == other);
-			}
-
-		};
-		/*
-		 * Matrix_const_iterator definition
-		 */
-		class Matrix_const_iterator : Matrix_iterator{
+		~Matrix(){
 		
-		    public:
-			using Matrix_iterator::Matrix_iterator;
+		    delete[] elements;
+		}
 
-			/**
-			 * @brief Operator* for the Matrix_const_iterator class
-			 *
-			 * Returns the element currently pointed by the iterator as a const
-			 * reference. If all elements have already been consumed an 
-			 * ExpiredIteratorException will be throwed.
-			 */
-			const scalar_type& operator*(){
-			
-			    return Matrix_iterator::operator*();
-			}
-		};
-	}
+
+		iterator begin() { return iterator{elements, max_index};}
+		iterator end() { return iterator{nullptr, 0};}
+		const_iterator begin() const { return const_iterator{elements, max_index};}
+		const_iterator end() const { return const_iterator{nullptr, 0};}
+		dimension get_dimensions() const {
+		
+		    return dims;
+		}
+
+	};
 	
+	template <typename T>
+	std::ostream& operator<< ( std::ostream& os, const Matrix<T>& matrix){
 	
+	    os << "[ ";
+	    for (auto& x : matrix)
+		os << x << " ";
+	    os << "]";
+	    return os;
 	}
+		
+    }
 }
 
 #endif
