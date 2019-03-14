@@ -141,15 +141,51 @@ namespace leaqx8664{
 		///////////////////
 		// BEGIN AND END FUNCTIONS                      <----------------------------------------- ADD COMMENTS FOR EACH FUNCTION
 		///////////////////
+		/**
+		 * @brief Get an iterator to the beginning of the structure
+		 *
+		 * Return an iterator to the first element in the first row of the Matrix object.
+		 * Iteratorion through Matrix objects is performed by rows.
+		 *
+		 * @returns An iterator to the first element in the matrix
+		 */
 		iterator begin() { return iterator{elements.get(), max_index};}
+		/**
+		 * @brief Get an iterator representing the terminal element in the structure.
+		 *
+		 * Returns an iterator pointing to the terminal element of the matrix.
+		 *
+		 */
 		iterator end() { return iterator{nullptr, 0};}
+		/**
+		 * @brief Get a const iterator to the beginning of the structure
+		 *
+		 * Return a const iterator to the first element in the first row of the Matrix object.
+		 * Iteratorion through Matrix objects is performed by rows.
+		 *
+		 * @returns A const iterator to the first element in the matrix
+		 */
 		const_iterator begin() const { return const_iterator{elements.get(), max_index};}
+		/**
+		 * @brief Get a const iterator representing the terminal element in the structure.
+		 *
+		 * Returns a const iterator pointing to the terminal element of the matrix.
+		 *
+		 */
 		const_iterator end() const { return const_iterator{nullptr, 0};}
 
 		
 		///////////////////
-		// GET DIMENSION MEMBER                      <----------------------------------------- ADD COMMENTS FOR EACH FUNCTION
+		// GET DIMENSION MEMBER                      
 		///////////////////
+		/**
+		 * @brief Get the dimensions of a Matrix 
+		 *
+		 * Returns an object of type Matrix<T>::dimension that represents
+		 * the dimensions of the Matrix object.
+		 *
+		 * @returns The dimensions of the Matrix
+		 */
 		dimension get_dimensions() const {
 		
 		    return dims;
@@ -262,14 +298,31 @@ namespace leaqx8664{
 	};
 	
 	////////////////
-	// OPERATOR PUT TO FOR THE MATRIX CLASS                  <---------------------------- ADD COMMENTS
+	// OPERATOR PUT TO FOR THE MATRIX CLASS      
 	////////////////
+	/**
+	 * @brief Overloading of operator<< for Matrix class
+	 *
+	 * The given Matrix is redirected to the given std::ostream
+	 * between square brackets and using a semicolon and a newline
+	 * between each row of the matrix.
+	 *
+	 * @param os The target std::ostream
+	 * @param matrix The Matrix object to redirect
+	 */
 	template <typename T>
 	std::ostream& operator<< ( std::ostream& os, const Matrix<T>& matrix){
 	
 	    os << "[ ";
-	    for (auto& x : matrix)
-		os << x << " ";
+	    size_t i = 0;
+	    typename Matrix<T>::dimension dims = matrix.get_dimensions();
+	    for (auto& x : matrix){
+		os << x;
+		if (++i % dims.second == 0 && i/dims.second != dims.first)
+		    os << ";\n";
+		else
+		 os << " ";
+	    }
 	    os << "]";
 	    return os;
 	}
