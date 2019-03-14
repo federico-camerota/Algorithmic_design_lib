@@ -55,7 +55,7 @@ namespace leaqx8664{
 
 	    private:
 		//! Pointer to array of elements in the matrix
-		scalar_type* elements; 
+		std::unique_ptr<scalar_type[]> elements; 
 		//! Pair of the number of rows and columns in the matrix
 		std::pair<size_t, size_t> dims; 
 		//! Maximum valid index in this matrix
@@ -122,30 +122,28 @@ namespace leaqx8664{
 		 * @param other Matrix object to move from
 		 */
 		Matrix (Matrix<T>&& other) :
-		    dims{std::move(other.dims)}, max_index{other.max_index}, elements{nullptr}
-		{
-		    std::swap(elements, other.elements);
-		}
+		    dims{std::move(other.dims)}, max_index{other.max_index}, elements{std::move(other.elements)}
+		{}
 		/**
 		 * ADD CONSTRUCTORS USING MATRIX SUBLOCKS
 		*/
 
 		/**
 		 * @brief Descturctor for the Matrix class
+		 *
+		 * The destructure is set to the default one.
 		 */
-		~Matrix(){
+		~Matrix() = default;
 		
-		    delete[] elements;
-		}
 
 
 
 		///////////////////
 		// BEGIN AND END FUNCTIONS                      <----------------------------------------- ADD COMMENTS FOR EACH FUNCTION
 		///////////////////
-		iterator begin() { return iterator{elements, max_index};}
+		iterator begin() { return iterator{elements.get(), max_index};}
 		iterator end() { return iterator{nullptr, 0};}
-		const_iterator begin() const { return const_iterator{elements, max_index};}
+		const_iterator begin() const { return const_iterator{elements.get(), max_index};}
 		const_iterator end() const { return const_iterator{nullptr, 0};}
 
 		
