@@ -161,7 +161,7 @@ namespace leaqx8664{
 		scalar_type& operator()(const size_t n_row, const size_t n_column){
 		
 		    if (n_row < matrix_shape.first && n_column < matrix_shape.second)
-			return elements[matrix_shape.second*n_rows + n_column];
+			return elements[matrix_shape.second*n_row + n_column];
 		    throw IndexOutOfBoundsException{};
 		}
 		/**
@@ -199,7 +199,7 @@ namespace leaqx8664{
 		const scalar_type& operator()(const size_t n_row, const size_t n_column) const {
 		
 		    if (n_row < matrix_shape.first && n_column < matrix_shape.second)
-			return elements[matrix_shape.second*n_rows + n_column];
+			return elements[matrix_shape.second*n_row + n_column];
 		    throw IndexOutOfBoundsException{};
 		}
 		/**
