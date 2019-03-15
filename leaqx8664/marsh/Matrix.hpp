@@ -177,6 +177,44 @@ namespace leaqx8664{
 			return elements[index];
 		    throw IndexOutOfBoundsException{};
 		}
+		/**
+		 * @brief Overloading of operator() for the Matrix class
+		 *
+		 * Return a const reference to the element in row n_row and column
+		 * n_column. Indexing starts at 0. If one of the indices exceeds the
+		 * corresponding dimension of the matrix a IndexOutOfBoundsException
+		 * will be thrown.
+		 *
+		 * @param n_row Row of the desired element.
+		 * @param n_column Column of the desired element.
+		 * @returns A const reference to the desired element in the matrix.
+		 *
+		 * @throws IndexOutOfBoundsException if one of the given indices is not valid.
+		 */
+		const scalar_type& operator()(const size_t n_row, const size_t n_column) const {
+		
+		    if (n_row < dims.first && n_column < dims.second)
+			return elements[dims.second*n_rows + n_column];
+		    throw IndexOutOfBoundsException{};
+		}
+		/**
+		 * @brief Overloading of operator() for the Matrix class
+		 *
+		 * Return a const reference to the element in the given position. Element positions are
+		 * counted by rows starting at 0. If the given index is greater or equal to the number
+		 * of elements in the matrix an IndexOutOfBoundsException will be thrown.
+		 *
+		 * @param index The index of the desired element.
+		 * @returns A const reference to the element in position index inside the matrix.
+		 *
+		 * @throws IndexOutOfBoundsException if one of the given indices is not valid.
+		 */
+		const scalar_type& operator()(const size_t index) const {
+		
+		    if (index <= max_index)
+			return elements[index];
+		    throw IndexOutOfBoundsException{};
+		}
 
 
 		///////////////////
