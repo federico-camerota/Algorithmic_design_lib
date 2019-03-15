@@ -47,7 +47,7 @@ namespace leaqx8664{
 		class Matrix_block;
 
 		//! Alias for the dimensions of the matrix
-		using dimension = std::pair<size_t, size_t>;
+		using shape = std::pair<size_t, size_t>;
 		//! Alias for matrix blocks
 		using block = Matrix_block;
 		//! Alias for scalar_type used in the matrix
@@ -57,7 +57,7 @@ namespace leaqx8664{
 		//! Pointer to array of elements in the matrix
 		std::unique_ptr<scalar_type[]> elements; 
 		//! Pair of the number of rows and columns in the matrix
-		std::pair<size_t, size_t> dims; 
+		std::pair<size_t, size_t> matrix_shape; 
 		//! Maximum valid index in this matrix
 		const size_t max_index;
 
@@ -95,14 +95,14 @@ namespace leaqx8664{
 		///////////////////
 
 		/**
-		 * Create a matrix of uninitialized values with dimension
+		 * Create a matrix of uninitialized values with shape
 		 * (n_rows, n_columns)
 		 *
 		 * @param n_rows Number of rows in the matrix
 		 * @param n_columns Number of columns in the matrix
 		 */
 		Matrix (const size_t n_rows, const size_t n_columns) :
-		    dims{n_rows, n_columns}, max_index{n_rows*n_columns - 1}, elements{new T[n_rows*n_columns + 1]}
+		    matrix_shape{n_rows, n_columns}, max_index{n_rows*n_columns - 1}, elements{new T[n_rows*n_columns + 1]}
 		{}
 		/**
 		 * Copy constructor for Matrix objects
@@ -110,7 +110,7 @@ namespace leaqx8664{
 		 * @param other Matrix object to copy from
 		 */
 		Matrix (const Matrix<T>& other) :
-		    dims{other.dims}, max_index{other.max_index}, elements{new T[max_index + 1]}
+		    matrix_shape{other.matrix_shape}, max_index{other.max_index}, elements{new T[max_index + 1]}
 		{
 		    //copy elements of the given matrix in the new one
 		    for (size_t i = 0U; i <= max_index; ++i)
@@ -122,7 +122,7 @@ namespace leaqx8664{
 		 * @param other Matrix object to move from
 		 */
 		Matrix (Matrix<T>&& other) :
-		    dims{std::move(other.dims)}, max_index{other.max_index}, elements{std::move(other.elements)}
+		    matrix_shape{std::move(other.matrix_shape)}, max_index{other.max_index}, elements{std::move(other.elements)}
 		{}
 		/**
 		 * ADD CONSTRUCTORS USING MATRIX SUBLOCKS
@@ -160,8 +160,8 @@ namespace leaqx8664{
 		 */
 		scalar_type& operator()(const size_t n_row, const size_t n_column){
 		
-		    if (n_row < dims.first && n_column < dims.second)
-			return elements[dims.second*n_rows + n_column];
+		    if (n_row < matrix_shape.first && n_column < matrix_shape.second)
+			return elements[matrix_shape.second*n_rows + n_column];
 		    throw IndexOutOfBoundsException{};
 		}
 		/**
@@ -198,8 +198,8 @@ namespace leaqx8664{
 		 */
 		const scalar_type& operator()(const size_t n_row, const size_t n_column) const {
 		
-		    if (n_row < dims.first && n_column < dims.second)
-			return elements[dims.second*n_rows + n_column];
+		    if (n_row < matrix_shape.first && n_column < matrix_shape.second)
+			return elements[matrix_shape.second*n_rows + n_column];
 		    throw IndexOutOfBoundsException{};
 		}
 		/**
@@ -235,7 +235,7 @@ namespace leaqx8664{
 		 */
 		bool operator== (const Matrix<scalar_type>& other) const noexcept {
 
-		    if (dims.first == other.dims.first && dims.second == other.dims.second){
+		    if (matrix_shape.first == other.matrix_shape.first && matrix_shape.second == other.matrix_shape.second){
 			for (size_t i = 0; i <= max_index; ++i){
 
 			    if (*this(i) != other(i))
@@ -319,14 +319,14 @@ namespace leaqx8664{
 		/**
 		 * @brief Get the dimensions of a Matrix 
 		 *
-		 * Returns an object of type Matrix<T>::dimension that represents
+		 * Returns an object of type Matrix<T>::shape that represents
 		 * the dimensions of the Matrix object.
 		 *
 		 * @returns The dimensions of the Matrix
 		 */
-		dimension get_dimensions() const noexcept {
+		shape get_dimensions() const noexcept {
 		
-		    return dims;
+		    return matrix_shape;
 		}
 
 	    private:
@@ -463,10 +463,10 @@ namespace leaqx8664{
 	
 	    os << "[ ";
 	    size_t i = 0;
-	    typename Matrix<T>::dimension dims = matrix.get_dimensions();
+	    typename Matrix<T>::shape matrix_shape = matrix.get_dimensions();
 	    for (auto& x : matrix){
 		os << x;
-		if (++i % dims.second == 0 && i/dims.second != dims.first)
+		if (++i % matrix_shape.second == 0 && i/matrix_shape.second != matrix_shape.first)
 		    os << ";\n";
 		else
 		 os << " ";
