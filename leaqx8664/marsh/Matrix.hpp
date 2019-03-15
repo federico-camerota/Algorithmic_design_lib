@@ -218,61 +218,68 @@ namespace leaqx8664{
 			{}
 			/**
 			 * @brief Operator++ for the Matrix_iterator class
-			     *
-			     * Update the iterator to point to the following element in the matrix.
-			     * When all elements have been consumed, a call to this method will throw
-			     * an ExpiredIteratorException.
-			     */
-			    Matrix_iterator& operator++(){
+			 *
+			 * Update the iterator to point to the following element in the matrix.
+			 * When all elements have been consumed, a call to this method will throw
+			 * an ExpiredIteratorException.
+			 *
+			 * @returns A reference to this iterator.
+			 */
+			Matrix_iterator& operator++(){
+			
+			    if (remaining > 0){
 			    
-				if (remaining > 0){
-				
-				    //decrement remaining, when different from zero increment 
-				    //the current_position while when reaches zero set to
-				    //nullptr
-				    (--remaining && ++current_position) || (current_position = nullptr);
-				    return *this;
-				}
+				//decrement remaining, when different from zero increment 
+				//the current_position while when reaches zero set to
+				//nullptr
+				(--remaining && ++current_position) || (current_position = nullptr);
+				return *this;
+			    }
 
+			    throw ExpiredIteratorException{};
+			}
+			/**
+			 * @brief Operator* for the Matrix_iterator class
+			 *
+			 * Returns a reference to the current element pointed by the iterator.
+			 * If all elements have already been consumed, a call to this method will
+			 * throw an ExpiredIteratorException
+			 *
+			 * @returns A reference to the element pointed by the iterator
+			 * @throws ExpiredIteratorException If the iterator is pointing to the terminal element of the Matrix.
+			 */
+			scalar_type& operator*(){
+			
+			    if (current_position)
+				return *current_position;
+			    else
 				throw ExpiredIteratorException{};
-			    }
-			    /**
-			     * @brief Operator* for the Matrix_iterator class
-			     *
-			     * Returns a reference to the current element pointed by the iterator.
-			     * If all elements have already been consumed, a call to this method will
-			     * throw an ExpiredIteratorException
-			     */
-			    scalar_type& operator*(){
-			    
-				if (current_position)
-				    return *current_position;
-				else
-				    throw ExpiredIteratorException{};
-			    }
-			    /**
-			     * @brief Operator== for the Matrix_iterator class
-			     *
-			     * Checks if this and the given Matrix_iterator are pointint to the same
-			     * element in the matrix.
-			     *
-			     * @param other Iterator to compare with
-			     */
-			    bool operator==(const Matrix_iterator& other){
-			    
-				return current_position == other.current_position;
-			    }
-			    /**
-			     * @brief Operator!= for the Matrix_iterator class
-			     *
-			     * Check if this and the given Matrix_iterator are different
-			     *
-			     * @param other Iterator to check against
-			     */
-			    bool operator!=(const Matrix_iterator& other){
-			    
-				return !(*this == other);
-			    }
+			}
+			/**
+			 * @brief Operator== for the Matrix_iterator class
+			 *
+			 * Checks if this and the given Matrix_iterator are pointint to the same
+			 * element in the matrix.
+			 *
+			 * @param other Iterator to compare with
+			 * @returns True if the given iterator points to the same element as this one, false otherwise.
+			 */
+			bool operator==(const Matrix_iterator& other){
+			
+			    return current_position == other.current_position;
+			}
+			/**
+			 * @brief Operator!= for the Matrix_iterator class
+			 *
+			 * Check if this and the given Matrix_iterator are different
+			 *
+			 * @param other Iterator to check against
+			 * @returns True if the given iterator does not point to the same element as this one, false if it does.
+			 */
+			bool operator!=(const Matrix_iterator& other){
+			
+			    return !(*this == other);
+			}
 
 		};
 		//////////////////
@@ -289,6 +296,9 @@ namespace leaqx8664{
 			 * Returns the element currently pointed by the iterator as a const
 			 * reference. If all elements have already been consumed an 
 			 * ExpiredIteratorException will be throwed.
+			 *
+			 * @returns A const reference to the element pointed by the iterator
+			 * @throws ExpiredIteratorException If the iterator is pointing to the terminal element of the Matrix.
 			 */
 			const scalar_type& operator*(){
 			
