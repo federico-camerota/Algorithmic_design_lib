@@ -5,5 +5,6 @@
 
 //include ExpiredIteratorException header
 #include "exceptions/ExpiredIteratorException.hpp"
+#include "exceptions/IndexOutOfBoundsException.hpp"
 
 #endif
