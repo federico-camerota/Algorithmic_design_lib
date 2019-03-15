@@ -139,6 +139,11 @@ namespace leaqx8664{
 		///////////////////
 		// OPERATORS OVERLOADING
 		///////////////////
+
+
+		///////////////////
+		// OPERATOR()
+		///////////////////
 		/**
 		 * @brief Overloading of operator() for the Matrix class
 		 *
@@ -214,6 +219,44 @@ namespace leaqx8664{
 		    if (index <= max_index)
 			return elements[index];
 		    throw IndexOutOfBoundsException{};
+		}
+
+
+		///////////////////
+		// OPERATOR== AND OPERATOR!=
+		///////////////////
+		/**
+		 * @breif Overloading of operator== for Matrix class
+		 *
+		 * Check if this and the given matrix have the same shape and the same elements.
+		 *
+		 * @param other The matrix to compare with this one.
+		 * @returns True if have the same shape and elements, false otherwise.
+		 */
+		bool operator== (const Matrix<scalar_type>& other) const noexcept {
+
+		    if (dims.first == other.dims.first && dims.second == other.dims.second){
+			for (size_t i = 0; i <= max_index; ++i){
+
+			    if (*this(i) != other(i))
+				return false;
+			}
+			return true;
+		    }
+
+		    return false;
+		}
+		/**
+		 * @breif Overloading of operator!= for Matrix class
+		 *
+		 * Check if this and the given matrix are different.
+		 *
+		 * @param other The matrix to compare with this one.
+		 * @returns True if have different shape or different elements, false otherwise.
+		 */
+		bool operator!= (const Matrix<scalar_type>& other) const noexcept {
+
+		    return !operator==(other);
 		}
 
 
