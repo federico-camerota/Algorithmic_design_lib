@@ -136,10 +136,51 @@ namespace leaqx8664{
 		~Matrix() = default;
 		
 
+		///////////////////
+		// OPERATORS OVERLOADING
+		///////////////////
+		/**
+		 * @brief Overloading of operator() for the Matrix class
+		 *
+		 * Return a reference to the element in row n_row and column
+		 * n_column. Indexing starts at 0. If one of the indices exceeds the
+		 * corresponding dimension of the matrix a IndexOutOfBoundsException
+		 * will be thrown.
+		 *
+		 * @param n_row Row of the desired element.
+		 * @param n_column Column of the desired element.
+		 * @returns A reference to the desired element in the matrix.
+		 *
+		 * @throws IndexOutOfBoundsException if one of the given indices is not valid.
+		 */
+		scalar_type& operator()(const size_t n_row, const size_t n_column){
+		
+		    if (n_row < dims.first && n_column < dims.second)
+			return elements[dims.second*n_rows + n_column];
+		    throw IndexOutOfBoundsException{};
+		}
+		/**
+		 * @brief Overloading of operator() for the Matrix class
+		 *
+		 * Return a reference to the element in the given position. Element positions are
+		 * counted by rows starting at 0. If the given index is greater or equal to the number
+		 * of elements in the matrix an IndexOutOfBoundsException will be thrown.
+		 *
+		 * @param index The index of the desired element.
+		 * @returns A reference to the element in position index inside the matrix.
+		 *
+		 * @throws IndexOutOfBoundsException if one of the given indices is not valid.
+		 */
+		scalar_type& operator()(const size_t index){
+		
+		    if (index <= max_index)
+			return elements[index];
+		    throw IndexOutOfBoundsException{};
+		}
 
 
 		///////////////////
-		// BEGIN AND END FUNCTIONS                      <----------------------------------------- ADD COMMENTS FOR EACH FUNCTION
+		// BEGIN AND END FUNCTIONS                      
 		///////////////////
 		/**
 		 * @brief Get an iterator to the beginning of the structure
@@ -173,6 +214,22 @@ namespace leaqx8664{
 		 *
 		 */
 		const_iterator end() const { return const_iterator{nullptr, 0};}
+		/**
+		 * @brief Get a const iterator to the beginning of the structure
+		 *
+		 * Return a const iterator to the first element in the first row of the Matrix object.
+		 * Iteratorion through Matrix objects is performed by rows.
+		 *
+		 * @returns A const iterator to the first element in the matrix
+		 */
+		const_iterator cbegin() const { return const_iterator{elements.get(), max_index};}
+		/**
+		 * @brief Get a const iterator representing the terminal element in the structure.
+		 *
+		 * Returns a const iterator pointing to the terminal element of the matrix.
+		 *
+		 */
+		const_iterator cend() const { return const_iterator{nullptr, 0};}
 
 		
 		///////////////////
@@ -186,7 +243,7 @@ namespace leaqx8664{
 		 *
 		 * @returns The dimensions of the Matrix
 		 */
-		dimension get_dimensions() const {
+		dimension get_dimensions() const noexcept {
 		
 		    return dims;
 		}
