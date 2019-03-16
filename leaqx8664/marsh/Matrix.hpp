@@ -46,7 +46,7 @@ namespace leaqx8664{
 		 */
 		class Matrix_block;
 
-		//! Alias for the dimensions of the matrix
+		//! Alias for the shape of the matrix
 		using shape = std::pair<size_t, size_t>;
 		//! Alias for matrix blocks
 		using block = Matrix_block;
@@ -317,17 +317,34 @@ namespace leaqx8664{
 		// GET DIMENSION MEMBER                      
 		///////////////////
 		/**
-		 * @brief Get the dimensions of a Matrix 
+		 * @brief Get the shape of a Matrix 
 		 *
 		 * Returns an object of type Matrix<T>::shape that represents
-		 * the dimensions of the Matrix object.
+		 * the shape of the Matrix object.
 		 *
-		 * @returns The dimensions of the Matrix
+		 * @returns The shape of the Matrix
 		 */
-		shape get_dimensions() const noexcept {
+		shape get_shape() const noexcept {
 		
 		    return matrix_shape;
 		}
+
+		///////////////////
+		// MAX INDEX MEMBER
+		///////////////////
+		/**
+		 * @brief Get the maximum sequential index for this matrix object
+		 *
+		 * Returns the maximum valid index for this matrix when accessing elements 
+		 * sequentially.
+		 *
+		 * @returns The maximum valid sequential index
+		 */
+		size_t max_index() const noexcept {
+		
+		    return max_index;
+		}
+
 
 	    private:
 
@@ -463,7 +480,7 @@ namespace leaqx8664{
 	
 	    os << "[ ";
 	    size_t i = 0;
-	    typename Matrix<T>::shape matrix_shape = matrix.get_dimensions();
+	    typename Matrix<T>::shape matrix_shape = matrix.get_shape();
 	    for (auto& x : matrix){
 		os << x;
 		if (++i % matrix_shape.second == 0 && i/matrix_shape.second != matrix_shape.first)
