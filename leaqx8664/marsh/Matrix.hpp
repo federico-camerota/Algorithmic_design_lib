@@ -238,7 +238,7 @@ namespace leaqx8664{
 		    if (matrix_shape.first == other.matrix_shape.first && matrix_shape.second == other.matrix_shape.second){
 			for (size_t i = 0; i <= max_index; ++i){
 
-			    if (*this(i) != other(i))
+			    if ((*this)(i) != other(i))
 				return false;
 			}
 			return true;
@@ -340,7 +340,7 @@ namespace leaqx8664{
 		 *
 		 * @returns The maximum valid sequential index
 		 */
-		size_t max_index() const noexcept {
+		size_t get_max_index() const noexcept {
 		
 		    return max_index;
 		}
