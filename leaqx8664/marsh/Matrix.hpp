@@ -63,7 +63,7 @@ namespace leaqx8664{
 		    //! Pair of the number of rows and columns in the matrix
 		    std::pair<size_t, size_t> matrix_shape; 
 		    //! Maximum valid index in this matrix
-		    const size_t max_index;
+		    size_t max_index;
 
 		////////////////////////////////
 		// ITERATORS DECLATRATION
@@ -167,7 +167,7 @@ namespace leaqx8664{
 
 			for (size_t i = 0; i <= max_index; ++i){
 			
-			    elements[i] = other.elements[i];:w
+			    elements[i] = other.elements[i];
 			}
 			return *this;
 		    }
@@ -178,7 +178,7 @@ namespace leaqx8664{
 		     *
 		     * @param other An rvalue reference to a matrix to move from.
 		     */
-		    Matrix<T>& operator= (const Matrix<T>& other){
+		    Matrix<T>& operator= (Matrix<T>&& other){
 		    
 			elements = std::move(other.elements);
 			matrix_shape = std::move(other.matrix_shape);

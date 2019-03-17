@@ -2,6 +2,7 @@
 
 #include "leaqx8664.hpp"
 #include <iostream>
+#include <iomanip>
 #include <array>
 
 std::array<int,8> test_2by4_matrix{1,2,3,4,5,6,7,8};
@@ -41,6 +42,11 @@ std::array<int,8> test_2by4_matrix{1,2,3,4,5,6,7,8};
     // in test_2by4_matrix.
     ////////////////////
     bool test_operator_call();
+    ////////////////////
+    //Test move and copy assignment 
+    ////////////////////
+    bool test_copy_move_assignment();
+
 /////////////////////
 // CONSTRUCTORS TESTS
 /////////////////////
@@ -56,15 +62,16 @@ std::array<int,8> test_2by4_matrix{1,2,3,4,5,6,7,8};
 
 int main(){
 
-    std::cout << "Get shape test : " <<  (test_get_shape() ? "passed" : "failed") << std::endl;
-    std::cout << "Max_index test : " << (test_max_index() ? "passed" : "failed") << std::endl;
-    std::cout << "Iterators test : " << (test_iterators() ? "passed" : "failed") << std::endl;
-//    std::cout << "Operator put to test : " << (test_operator_put_to() ? "passed" : "failed") << std::endl;
-    std::cout << "Operator equal test : " << (test_operator_equal() ? "passed" : "failed") << std::endl;
-    std::cout << "Operator not equal test : " << (test_operator_not_equal() ? "passed" : "failed") << std::endl;
-    std::cout << "Operator call test : " << (test_operator_call() ? "passed" : "failed") << std::endl;
-    std::cout << "Copy constructor test : " << (test_copy_constructor() ? "passed" : "failed") << std::endl;
-    std::cout << "Move constructor test : " << (test_move_constructor() ? "passed" : "failed") << std::endl;
+    std::cerr << std::setw(50) << std::left << "Get shape test : " <<  (test_get_shape() ? "passed" : "failed") << std::endl;
+    std::cerr << std::setw(50) << std::left << "Max_index test : " << (test_max_index() ? "passed" : "failed") << std::endl;
+    std::cerr << std::setw(50) << std::left << "Iterators test : " << (test_iterators() ? "passed" : "failed") << std::endl;
+//  std::cerr << std::setw(50) << std::left << "Operator put to test : " << (test_operator_put_to() ? "passed" : "failed") << std::endl;
+    std::cerr << std::setw(50) << std::left << "Operator equal test : " << (test_operator_equal() ? "passed" : "failed") << std::endl;
+    std::cerr << std::setw(50) << std::left << "Operator not equal test : " << (test_operator_not_equal() ? "passed" : "failed") << std::endl;
+    std::cerr << std::setw(50) << std::left << "Operator call test : " << (test_operator_call() ? "passed" : "failed") << std::endl;
+    std::cerr << std::setw(50) << std::left << "Copy constructor test : " << (test_copy_constructor() ? "passed" : "failed") << std::endl;
+    std::cerr << std::setw(50) << std::left << "Move constructor test : " << (test_move_constructor() ? "passed" : "failed") << std::endl;
+    std::cerr << std::setw(50) << std::left << "Copy and move assignment test : " << (test_copy_move_assignment() ? "passed" : "failed") << std::endl;
 }
 
 /////////////////////
@@ -155,6 +162,26 @@ int main(){
 	
 	return (mat == mat2) && (mat == mat3);
     }
+    bool test_copy_move_assignment(){
+
+	bool result = true;
+	leaqx8664::marsh::Matrix<int> mat{2,4};
+	for (size_t j = 0; j <= mat.get_max_index(); ++j)
+		mat(j) = test_2by4_matrix[j];
+
+	leaqx8664::marsh::Matrix<int> mat2{2,4};
+	mat2 = mat;
+	result &= (mat2 == mat);
+	++(mat2(0));
+	result &= (mat(0) != mat2(0));
+
+
+	leaqx8664::marsh::Matrix<int> mat3{2,4};
+	mat3 = std::move(mat);
+	++(mat3(0));
+	result &= (mat2 == mat3);
+	return result;
+    }
 /////////////////////
 // CONSTRUCTOR TESTS
 /////////////////////
@@ -166,7 +193,7 @@ int main(){
 		mat(j) = test_2by4_matrix[j];
 
 	leaqx8664::marsh::Matrix<int> mat2{mat};
-	result &= mat2 == mat;
+	result &= (mat2 == mat);
 	++(mat2(0));
 	result &= (mat(0) != mat2(0));
 	return result;
