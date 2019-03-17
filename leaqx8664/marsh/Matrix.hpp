@@ -150,6 +150,42 @@ namespace leaqx8664{
 		///////////////////
 
 		    ///////////////////
+		    // OPERATOR=
+		    ///////////////////
+		    /*
+		     * @brief Overloading of operator= to allow copy assignment.
+		     *
+		     * Make this Matrix a copy of the given one.
+		     *
+		     * @param other The matrix to copy from
+		     */
+		    Matrix<T>& operator= (const Matrix<T>& other){
+		    
+			elements.reset(new T[other.max_index + 1]);
+			matrix_shape = other.matrix_shape;
+			max_index = other.max_index;
+
+			for (size_t i = 0; i <= max_index; ++i){
+			
+			    elements[i] = other.elements[i];:w
+			}
+			return *this;
+		    }
+		    /*
+		     * @brief Overloading of operator= to allow move assignment.
+		     *
+		     * Move the given matrix into this one
+		     *
+		     * @param other An rvalue reference to a matrix to move from.
+		     */
+		    Matrix<T>& operator= (const Matrix<T>& other){
+		    
+			elements = std::move(other.elements);
+			matrix_shape = std::move(other.matrix_shape);
+			max_index = other.max_index;
+			return *this;
+		    }
+		    ///////////////////
 		    // OPERATOR()
 		    ///////////////////
 			/**
